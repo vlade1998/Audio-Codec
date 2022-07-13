@@ -1,4 +1,4 @@
-module in_i2s #(parameter DATA_WIDTH = 24) (
+module in_lj #(parameter DATA_WIDTH = 24) (
 	input BCLK,
     input ADCDAT,
     input start,
@@ -27,14 +27,14 @@ module in_i2s #(parameter DATA_WIDTH = 24) (
             data_ready = 0;
         end
         if(running) begin
-            ADCLRC = bit_counter >= DATA_WIDTH + 1;        
+            ADCLRC = bit_counter >= DATA_WIDTH;        
             if(ADCLRC)
-                if(bit_counter > DATA_WIDTH + 1) right_data[DATA_WIDTH + DATA_WIDTH + 1 - bit_counter] = ADCDAT;
+                right_data[DATA_WIDTH + DATA_WIDTH - 1 - bit_counter] = ADCDAT;
             else 
-                if(bit_counter > 0) left_data[DATA_WIDTH - bit_counter] = ADCDAT;
+                left_data[DATA_WIDTH - 1 - bit_counter] = ADCDAT;
             if(!start)
                 bit_counter = bit_counter + 1;
-            if(bit_counter == DATA_WIDTH + DATA_WIDTH + 2) begin
+            if(bit_counter == DATA_WIDTH<<1) begin
                 running = 0;
                 data_ready = 1;
             end
