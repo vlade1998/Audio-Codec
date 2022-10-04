@@ -1,43 +1,47 @@
-module in_i2s #(parameter DATA_WIDTH = 24) (
+module in_i2s #(parameter DATA_WIDTH = 16) (
 	input BCLK,
     input ADCDAT,
-    input start,
-	output reg ADCLRC,
-    output reg data_ready,
-    output reg[(DATA_WIDTH-1):0] left_data,
-    output reg[(DATA_WIDTH-1):0] right_data,
+	input ADCLRC,
+    output reg[(DATA_WIDTH-1):0] out_left_data,
+    output reg[(DATA_WIDTH-1):0] out_right_data,
     output wire[5:0] counter, //debug
     output wire[31:0] debug //debug
 );
 
     // Internal registers
     reg[5:0] bit_counter = 5'd0;
-    reg running = 0;
+    reg[(DATA_WIDTH-1):0] left_data;
+    reg[(DATA_WIDTH-1):0] right_data;
+    reg pClock = 1;
+    reg prevADCLRC;
 
     //debug
     assign counter = bit_counter;
-    assign debug = DATA_WIDTH + DATA_WIDTH - 1 - bit_counter;
+    assign debug = prevADCLRC;
+
+    always @(negedge ADCLRC)
+    begin
+        out_right_data <= right_data;
+    end 
+
+    always @(posedge ADCLRC)
+    begin
+        out_left_data <= left_data;
+    end 
 
     // ADC processing
-    always @(posedge BCLK)
+    always @(negedge BCLK)
     begin
-        if(start) begin
-            running = 1;
-            bit_counter = 5'd0;
-            data_ready = 0;
-        end
-        if(running) begin
-            ADCLRC = bit_counter >= DATA_WIDTH + 1;        
-            if(ADCLRC)
-                if(bit_counter > DATA_WIDTH + 1) right_data[DATA_WIDTH + DATA_WIDTH + 1 - bit_counter] = ADCDAT;
-            else 
-                if(bit_counter > 0) left_data[DATA_WIDTH - bit_counter] = ADCDAT;
-            if(!start)
-                bit_counter = bit_counter + 1;
-            if(bit_counter == DATA_WIDTH + DATA_WIDTH + 2) begin
-                running = 0;
-                data_ready = 1;
+        if(bit_counter < DATA_WIDTH) begin  
+            prevADCLRC = ADCLRC;    
+            if(ADCLRC) begin
+                right_data[DATA_WIDTH - 1 - bit_counter] = ADCDAT;
+            end else begin 
+                left_data[DATA_WIDTH - 1 - bit_counter] = ADCDAT;
             end
+            bit_counter = bit_counter + 1;
+        end else begin
+            if(ADCLRC != prevADCLRC) bit_counter = 5'd0;
         end
     end
 

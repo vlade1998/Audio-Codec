@@ -1,35 +1,37 @@
-module out_i2s #(parameter DATA_WIDTH = 24) (
+module out_i2s #(parameter DATA_WIDTH = 16) (
     input BCLK,
-    input start,
     input [(DATA_WIDTH - 1): 0] left_data,
     input [(DATA_WIDTH - 1): 0] right_data,
-    output reg DACLRC,
+    input DACLRC,
     output reg DACDAT,
-    output reg data_ready
+    output wire[5:0] debug
 );
 
     // Internal register
     reg[5:0] bit_counter = 5'd0;
-    reg running = 0;
+    reg prevDACLRC;
+
+    assign debug = right_data[DATA_WIDTH - 1 - bit_counter];
 
     //DAC processing
     always @(negedge BCLK) begin
-        if(start) begin
-            running = 1;
-            bit_counter = 5'd0;
-            data_ready = 0;
-        end
-        if(running) begin
-            DACLRC = bit_counter >= DATA_WIDTH + 1;
+        if(bit_counter < DATA_WIDTH) begin  
+            prevDACLRC = DACLRC;
             if(DACLRC) begin
-                if(bit_counter > DATA_WIDTH + 1) DACDAT = right_data[DATA_WIDTH + DATA_WIDTH + 1 - bit_counter];
+                DACDAT = right_data[DATA_WIDTH - 1 - bit_counter];
             end else begin
-                if (bit_counter > 0) DACDAT = left_data[DATA_WIDTH - bit_counter];
+                DACDAT = left_data[DATA_WIDTH - 1 - bit_counter];
             end
-            if(!start) bit_counter = bit_counter + 1;
-            if(bit_counter == DATA_WIDTH + DATA_WIDTH + 3) begin
-                running = 0;
-                data_ready = 1;
+            bit_counter = bit_counter + 1;
+        end else begin
+            if(DACLRC != prevDACLRC) begin 
+                bit_counter = 5'd0; 
+                if(DACLRC) begin
+                    DACDAT = right_data[DATA_WIDTH - 1 - bit_counter];
+                end else begin
+                    DACDAT = left_data[DATA_WIDTH - 1 - bit_counter];
+                end
+                bit_counter = bit_counter + 1; 
             end
         end
     end
