@@ -22,7 +22,7 @@ module audio #(parameter DATA_WIDTH = 16) (
 	wire[23:0] i2c_data;
 	wire[3:0] a,b,c,d;
     reg[(DATA_WIDTH-1):0] out_data;
-	wire[(DATA_WIDTH-1):0] left_data, right_data;
+	wire[(DATA_WIDTH-1):0] left_data, right_data, left_data_delay, right_data_delay;
 	wire[5:0] counter;
 
 	CLOCK_500 clk_500(
@@ -84,12 +84,21 @@ module audio #(parameter DATA_WIDTH = 16) (
 		.counter(counter)
 	);
 
+    delay delay(
+        .clk(clk),
+        .write_clk(ADCLRC),
+        .audio_right_in(left_data),
+        .audio_left_in(right_data),
+        .audio_right_out(left_data_delay),
+        .audio_left_out(right_data_delay)
+    );
+
 	out_i2s codec_out(
 		.BCLK(BCLK),
 		.DACDAT(DACDAT),
 		.DACLRC(DACLRC),
-		.left_data(left_data),
-		.right_data(right_data)
+		.left_data(left_data_delay),
+		.right_data(right_data_delay)
 	);
 	
 	dado_bcd valorDisplay5678(
@@ -157,7 +166,7 @@ module audio #(parameter DATA_WIDTH = 16) (
 	);
 	
 	always @(posedge div_clk) begin
-		out_data <= right_data[12:0];
+		out_data <= right_data_delay[12:0];
 	end
 
 endmodule

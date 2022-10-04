@@ -18,7 +18,7 @@ module delay
         .audio_data_left(audio_left_in),
         .data_read_right(delayed_audio_right),
         .data_read_left(delayed_audio_left),
-        .read_shift(1)
+        .read_shift(4000)
     );
 
     always @ (negedge clk) begin

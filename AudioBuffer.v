@@ -1,5 +1,5 @@
 module AudioBuffer
-#(parameter DATA_WIDTH=16, parameter BUFFER_WIDTH=5)
+#(parameter DATA_WIDTH=16, parameter BUFFER_WIDTH=12)
 (
     input clk,
     input write_clk,
