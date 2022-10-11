@@ -3,10 +3,10 @@ module delay
 (
     input clk,
     input write_clk,
-    input[(DATA_WIDTH-1):0] audio_right_in,
-    input[(DATA_WIDTH-1):0] audio_left_in,
-    output reg[(DATA_WIDTH-1):0] audio_right_out,
-    output reg[(DATA_WIDTH-1):0] audio_left_out
+    input signed[(DATA_WIDTH-1):0] audio_right_in,
+    input signed[(DATA_WIDTH-1):0] audio_left_in,
+    output reg signed[(DATA_WIDTH-1):0] audio_right_out,
+    output reg signed[(DATA_WIDTH-1):0] audio_left_out
 );
 
     wire[(DATA_WIDTH-1):0] delayed_audio_left, delayed_audio_right;
@@ -21,7 +21,7 @@ module delay
         .read_shift(4000)
     );
 
-    always @ (negedge clk) begin
+    always @ (negedge write_clk) begin
         audio_right_out = audio_right_in + delayed_audio_right;
         audio_left_out = audio_left_in + delayed_audio_left;
     end

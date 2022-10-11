@@ -106,7 +106,7 @@ always @(posedge END)
 		// ROM[7] = {8'h06,1'b0,volume[6:0]};	     //sound vol
 
 		ROM[0] = 16'h0810;
-		ROM[1] = 16'h0e42;
+		ROM[1] = 16'h0e4a;
 		// ROM[2] = 16'h0017;
 		// ROM[3] = 16'h0217;
 		

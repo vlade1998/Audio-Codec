@@ -1,4 +1,4 @@
-module audio #(parameter DATA_WIDTH = 16) (
+module audio #(parameter DATA_WIDTH = 24) (
     input clk,
     // Codec
     input BCLK,
@@ -75,7 +75,7 @@ module audio #(parameter DATA_WIDTH = 16) (
 	// 	.avs_s1_export_XCK(XCK)
 	// );
 
-	in_i2s codec_in(
+	in_i2s #(.DATA_WIDTH(DATA_WIDTH)) codec_in(
 		.BCLK(BCLK),
 		.ADCDAT(ADCDAT),
 		.ADCLRC(ADCLRC),
@@ -84,7 +84,7 @@ module audio #(parameter DATA_WIDTH = 16) (
 		.counter(counter)
 	);
 
-    delay delay(
+    delay #(.DATA_WIDTH(DATA_WIDTH)) delay(
         .clk(clk),
         .write_clk(ADCLRC),
         .audio_right_in(left_data),
@@ -93,12 +93,12 @@ module audio #(parameter DATA_WIDTH = 16) (
         .audio_left_out(right_data_delay)
     );
 
-	out_i2s codec_out(
+	out_i2s #(.DATA_WIDTH(DATA_WIDTH)) codec_out(
 		.BCLK(BCLK),
 		.DACDAT(DACDAT),
 		.DACLRC(DACLRC),
-		.left_data(left_data_delay),
-		.right_data(right_data_delay)
+		.left_data(left_data),
+		.right_data(right_data)
 	);
 	
 	dado_bcd valorDisplay5678(
