@@ -2,8 +2,8 @@ module in_i2s #(parameter DATA_WIDTH = 16) (
 	input BCLK,
     input ADCDAT,
 	input ADCLRC,
-    output reg[(DATA_WIDTH-1):0] out_left_data,
-    output reg[(DATA_WIDTH-1):0] out_right_data,
+    output reg signed[(DATA_WIDTH-1):0] out_left_data,
+    output reg signed[(DATA_WIDTH-1):0] out_right_data,
     output wire[5:0] counter, //debug
     output wire[31:0] debug //debug
 );

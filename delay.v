@@ -9,7 +9,7 @@ module delay
     output reg signed[(DATA_WIDTH-1):0] audio_left_out
 );
 
-    wire[(DATA_WIDTH-1):0] delayed_audio_left, delayed_audio_right;
+    wire signed[(DATA_WIDTH-1):0] delayed_audio_left, delayed_audio_right;
 
     AudioBuffer #(.DATA_WIDTH(DATA_WIDTH)) audioBuffer(
         .clk(clk),
@@ -22,8 +22,8 @@ module delay
     );
 
     always @ (negedge write_clk) begin
-        audio_right_out = audio_right_in + delayed_audio_right;
-        audio_left_out = audio_left_in + delayed_audio_left;
+        audio_right_out = audio_right_in + delayed_audio_right/4;
+        audio_left_out = audio_left_in + delayed_audio_left/4;
     end
 
 endmodule
