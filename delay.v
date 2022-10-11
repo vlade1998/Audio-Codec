@@ -14,16 +14,16 @@ module delay
     AudioBuffer #(.DATA_WIDTH(DATA_WIDTH)) audioBuffer(
         .clk(clk),
         .write_clk(write_clk),
-        .audio_data_right(audio_right_in),
-        .audio_data_left(audio_left_in),
+        .audio_data_right(audio_right_in + delayed_audio_right>>>1),
+        .audio_data_left(audio_left_in + delayed_audio_left>>>1),
         .data_read_right(delayed_audio_right),
         .data_read_left(delayed_audio_left),
         .read_shift(4000)
     );
 
     always @ (negedge write_clk) begin
-        audio_right_out = audio_right_in + delayed_audio_right/4;
-        audio_left_out = audio_left_in + delayed_audio_left/4;
+        audio_right_out = audio_right_in + delayed_audio_right/2;
+        audio_left_out = audio_left_in + delayed_audio_left/2;
     end
 
 endmodule
