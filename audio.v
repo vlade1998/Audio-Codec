@@ -84,14 +84,39 @@ module audio #(parameter DATA_WIDTH = 24) (
 		.counter(counter)
 	);
 
-    delay #(.DATA_WIDTH(DATA_WIDTH)) delay(
+    tremolo #(.DATA_WIDTH(DATA_WIDTH)) tremolo(
         .clk(clk),
-        .write_clk(ADCLRC),
         .audio_right_in(left_data),
         .audio_left_in(right_data),
         .audio_right_out(left_data_delay),
         .audio_left_out(right_data_delay)
     );
+
+    /* delay #(.DATA_WIDTH(DATA_WIDTH)) delay( */
+    /*     .clk(clk), */
+    /*     .write_clk(ADCLRC), */
+    /*     .audio_right_in(left_data), */
+    /*     .audio_left_in(right_data), */
+    /*     .audio_right_out(left_data_delay), */
+    /*     .audio_left_out(right_data_delay) */
+    /* ); */
+
+    /* vibrato #(.DATA_WIDTH(DATA_WIDTH)) vibrato( */
+    /*     .clk(clk), */
+    /*     .write_clk(ADCLRC), */
+    /*     .audio_right_in(left_data), */
+    /*     .audio_left_in(right_data), */
+    /*     .audio_right_out(left_data_delay), */
+    /*     .audio_left_out(right_data_delay) */
+    /* ); */
+
+    /* overdrive #(.DATA_WIDTH(DATA_WIDTH)) overdrive( */
+    /*     .clk(clk), */
+    /*     .audio_right_in(right_data), */
+    /*     .audio_left_in(left_data), */
+    /*     .audio_right_out(right_data_delay), */
+    /*     .audio_left_out(left_data_delay) */
+    /* ); */
 
 	out_i2s #(.DATA_WIDTH(DATA_WIDTH)) codec_out(
 		.BCLK(BCLK),
