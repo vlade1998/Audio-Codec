@@ -3,27 +3,27 @@ module audio #(parameter DATA_WIDTH = 24) (
     // Codec
     input BCLK,
     input ADCLRC,
-	input DACLRC,
-	input ADCDAT,
-	output DACDAT,
-	output XCK,
+    input DACLRC,
+    input ADCDAT,
+    output DACDAT,
+    output XCK,
 
-	//i2c
+    //i2c
 
-	output I2C_SCLK,
-	output I2C_SDAT,
+    output I2C_SCLK,
+    output I2C_SDAT,
 
-	input start_in,
-	output wire[6:0] display1, display2, display3, display4
+    input start_in,
+    output wire[6:0] display1, display2, display3, display4
 );
 
-    wire in_data_ready, out_data_ready, div_clk, audio_clk, locked;
-	wire i2c_clk, i2c_end, i2c_go;
-	wire[23:0] i2c_data;
-	wire[3:0] a,b,c,d;
-    reg[(DATA_WIDTH-1):0] out_data;
-	wire signed[(DATA_WIDTH-1):0] left_data, right_data, left_data_delay, right_data_delay;
-	wire[5:0] counter;
+      /*     wire in_data_ready, out_data_ready, div_clk, audio_clk, locked; */
+      wire i2c_clk, i2c_end, i2c_go;
+      wire[23:0] i2c_data;
+      wire[3:0] a, b, c, d;
+          reg[(DATA_WIDTH-1):0] out_data;
+      wire signed [(DATA_WIDTH-1):0] left_data, right_data, left_data_delay, right_data_delay;
+      wire [5:0] counter;
 
 	CLOCK_500 clk_500(
 		.CLOCK(clk),
@@ -31,9 +31,9 @@ module audio #(parameter DATA_WIDTH = 24) (
 		.DATA(i2c_data),
 		.END(i2c_end),
 		.RESET(0),
-		.GO(i2c_go),
+		.GO(i2c_go)
 	);
-
+	
 	i2c audio_i2c(
 		.CLOCK(i2c_clk),
 		.I2C_SCLK(I2C_SCLK),
@@ -42,7 +42,7 @@ module audio #(parameter DATA_WIDTH = 24) (
 		.GO(i2c_go),
 		.END(i2c_end),
 		.W_R(0),
-		.RESET(1),	
+		.RESET(1)	
 	);
 	 
 	Clock_divider cd(
@@ -56,7 +56,7 @@ module audio #(parameter DATA_WIDTH = 24) (
 		.c0(audio_clk),
 		.locked(locked)
 	);
-
+	
 	assign XCK = audio_clk;
 
 	// AUDIO_IF audio(
@@ -83,14 +83,14 @@ module audio #(parameter DATA_WIDTH = 24) (
 		.out_right_data(right_data),
 		.counter(counter)
 	);
-
-    tremolo #(.DATA_WIDTH(DATA_WIDTH)) tremolo(
-        .clk(clk),
-        .audio_right_in(left_data),
-        .audio_left_in(right_data),
-        .audio_right_out(left_data_delay),
-        .audio_left_out(right_data_delay)
-    );
+	    /* 	 */
+	    /* tremolo #(.DATA_WIDTH(DATA_WIDTH)) tremolo( */
+	    /*     .clk(ADCLRC), */
+	    /*     .audio_right_in(left_data), */
+	    /*     .audio_left_in(right_data), */
+	    /*     .audio_right_out(left_data_delay), */
+	    /*     .audio_left_out(right_data_delay) */
+	    /* ); */
 
     /* delay #(.DATA_WIDTH(DATA_WIDTH)) delay( */
     /*     .clk(clk), */
@@ -109,6 +109,24 @@ module audio #(parameter DATA_WIDTH = 24) (
     /*     .audio_right_out(left_data_delay), */
     /*     .audio_left_out(right_data_delay) */
     /* ); */
+
+    /* flanger #(.DATA_WIDTH(DATA_WIDTH)) flanger( */
+    /*     .clk(clk), */
+    /*     .write_clk(ADCLRC), */
+    /*     .audio_right_in(left_data), */
+    /*     .audio_left_in(right_data), */
+    /*     .audio_right_out(left_data_delay), */
+    /*     .audio_left_out(right_data_delay) */
+    /* ); */
+
+    chorus #(.DATA_WIDTH(DATA_WIDTH)) chorus(
+        .clk(clk),
+        .write_clk(ADCLRC),
+        .audio_right_in(left_data),
+        .audio_left_in(right_data),
+        .audio_right_out(left_data_delay),
+        .audio_left_out(right_data_delay)
+    );
 
     /* overdrive #(.DATA_WIDTH(DATA_WIDTH)) overdrive( */
     /*     .clk(clk), */
@@ -177,7 +195,7 @@ module audio #(parameter DATA_WIDTH = 24) (
 	);
 	
 	Display Display1(
-		.a3(a[3]),
+		.a3(a[3]), 
 		.a2(a[2]),
 		.a1(a[1]),
 		.a0(a[0]),
