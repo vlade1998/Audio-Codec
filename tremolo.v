@@ -9,7 +9,7 @@ module tremolo
     output wire [16:0] debug
 );
     wire [15:0] sine;
-    wire signed [31:0] mult_results_right, mult_results_left;
+    wire signed [42:0] mult_results_right, mult_results_left;
     wire signed [16:0] signed_sine;
 
     assign signed_sine = {1'b0, sine};
@@ -19,13 +19,13 @@ module tremolo
 
     sine_generator sine_generator(
         .clk(clk),
-        .fcw(24'b000000000010000000000000),
+        .fcw(24'b000000000000010000000000),
         .sine(sine)
     );
 
     always @(negedge clk) begin
-        audio_right_out = mult_results_right>>>15;
-        audio_left_out = mult_results_left>>>15;
+        audio_right_out = mult_results_right>>>16;
+        audio_left_out = mult_results_left>>>16;
     end
 
 endmodule

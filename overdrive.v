@@ -6,7 +6,7 @@ module overdrive #(parameter DATA_WIDTH = 24) (
     output reg signed[(DATA_WIDTH-1):0] audio_left_out
 );
 
-    reg signed [DATA_WIDTH-1:0] threshold = 24'd100;
+    reg signed [DATA_WIDTH-1:0] threshold = 24'd100000;
 
     always @ (negedge clk) begin
         if (audio_right_in > threshold) 
